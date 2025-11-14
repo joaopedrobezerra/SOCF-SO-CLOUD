@@ -13,9 +13,7 @@ def get_system_info():
     memory_info = process.memory_info()
     memory_mb = memory_info.rss / (1024 * 1024)
     
-    process.cpu_percent(interval=0.1)
-    
-    cpu_percent = process.cpu_percent(interval=0.2)
+    cpu_percent = process.cpu_percent(interval=1.0)
     
     os_name = platform.system()
     os_version = platform.release()
