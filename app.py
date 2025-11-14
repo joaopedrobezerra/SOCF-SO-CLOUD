@@ -3,23 +3,18 @@ import os
 import platform
 import psutil
 
-app = Flask(_name_)
+app = Flask(__name__)
 
-# Team members
 TEAM_MEMBERS = "Gabriel Zem Muraro e Joao Pedro Bezerra"
 
 def get_system_info():
-    """Get system information for the current process"""
     process = psutil.Process(os.getpid())
     
-    # Get memory usage in MB
     memory_info = process.memory_info()
     memory_mb = memory_info.rss / (1024 * 1024)
     
-    # Get CPU usage percentage
     cpu_percent = process.cpu_percent(interval=0.1)
     
-    # Get OS information
     os_name = platform.system()
     os_version = platform.release()
     os_full = f"{os_name} ({platform.platform()})"
@@ -34,7 +29,6 @@ def get_system_info():
 
 @app.route('/')
 def home():
-    """Homepage displaying system information in HTML format"""
     info = get_system_info()
     
     html = f"""
@@ -80,19 +74,55 @@ def home():
             .routes {{
                 margin-top: 30px;
                 padding: 20px;
-                background-color: #e8f5e9;
-                border-radius: 5px;
+                background-color: #e3f2fd;
+                border-radius: 10px;
+                border: 2px solid #2196F3;
             }}
             .routes h2 {{
-                color: #2e7d32;
+                color: #1565c0;
                 margin-top: 0;
+                margin-bottom: 20px;
             }}
-            .routes a {{
+            .route-item {{
+                background-color: white;
+                padding: 15px;
+                margin: 15px 0;
+                border-radius: 8px;
+                border-left: 5px solid #2196F3;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }}
+            .route-path {{
+                font-family: 'Courier New', monospace;
+                font-size: 18px;
+                font-weight: bold;
+                color: #1976d2;
+                margin-bottom: 8px;
+            }}
+            .route-path a {{
                 color: #1976d2;
                 text-decoration: none;
             }}
-            .routes a:hover {{
+            .route-path a:hover {{
                 text-decoration: underline;
+                color: #0d47a1;
+            }}
+            .route-description {{
+                color: #555;
+                line-height: 1.6;
+                margin-top: 8px;
+            }}
+            .route-response {{
+                background-color: #f5f5f5;
+                padding: 10px;
+                border-radius: 5px;
+                margin-top: 10px;
+                font-family: 'Courier New', monospace;
+                font-size: 13px;
+                color: #333;
+            }}
+            .emoji {{
+                font-size: 20px;
+                margin-right: 8px;
             }}
         </style>
     </head>
@@ -124,6 +154,41 @@ def home():
                 <span class="label">Sistema Operacional:</span>
                 <span class="value">{info['sistema_operacional']}</span>
             </div>
+            
+            <div class="routes">
+                <h2>Rotas Disponíveis da API</h2>
+                
+                <div class="route-item">
+                    <div class="route-path">
+                        <a href="/info" target="_blank">/info</a>
+                    </div>
+                    <div class="route-description">
+                        <strong>O que faz:</strong> Esta rota retorna apenas as informações sobre os 
+                        integrantes da equipe. É útil quando você precisa apenas saber quem desenvolveu 
+                        o projeto, sem todas as outras informações técnicas.
+                    </div>
+                    <div class="route-response">
+                        <strong>Retorna:</strong> JSON com os nomes dos integrantes<br>
+                        Exemplo: {{"integrantes": "Gabriel Zem Muraro e Joao Pedro Bezerra"}}
+                    </div>
+                </div>
+                
+                <div class="route-item">
+                    <div class="route-path">
+                        <a href="/metricas" target="_blank">/metricas</a>
+                    </div>
+                    <div class="route-description">
+                        <strong>O que faz:</strong> Esta rota retorna as métricas técnicas do sistema 
+                        em tempo real. Ela coleta informações sobre o processo da aplicação, como 
+                        quanto de memória está sendo usada, qual o uso de CPU, e qual sistema operacional 
+                        está rodando. Essas informações mudam toda vez que você acessa!
+                    </div>
+                    <div class="route-response">
+                        <strong>Retorna:</strong> JSON com métricas do sistema<br>
+                        Exemplo: {{"pid": 1234, "memoria_mb": 25.6, "cpu_percent": 3.4, "sistema_operacional": "Linux"}}
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
     </html>
@@ -132,14 +197,12 @@ def home():
 
 @app.route('/info')
 def info():
-    """Return team member information in JSON format"""
     return jsonify({
         "integrantes": TEAM_MEMBERS
     })
 
 @app.route('/metricas')
 def metricas():
-    """Return system metrics in JSON format"""
     info = get_system_info()
     return jsonify({
         "pid": info["pid"],
@@ -148,5 +211,5 @@ def metricas():
         "sistema_operacional": info["sistema_operacional"]
     })
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
