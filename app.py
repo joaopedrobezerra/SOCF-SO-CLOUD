@@ -211,6 +211,29 @@ def metricas():
         "sistema_operacional": info["sistema_operacional"]
     })
 
+@APP.route('/teste-cpu')
+def teste_cpu():
+    # Rota de teste que força uso de CPU para demonstração
+    # Faz cálculos pesados para aumentar o uso de CPU
+    import time
+    start = time.time()
+    result = 0
+    for i in range(10000000):
+        result += i ** 2
+    
+    info = get_system_info()
+    elapsed = time.time() - start
+    
+    return jsonify({
+        "mensagem": "Teste de CPU concluído",
+        "tempo_processamento": f"{elapsed:.2f} segundos",
+        "resultado_calculo": result,
+        "pid": info["pid"],
+        "memoria_mb": info["memoria_mb"],
+        "cpu_percent": info["cpu_percent"],
+        "observacao": "Acesse esta rota várias vezes seguidas para ver o CPU aumentar"
+    })
+
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     APP.run(host='0.0.0.0', port=port, debug=True)
