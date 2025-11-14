@@ -13,7 +13,7 @@ def get_system_info():
     memory_info = process.memory_info()
     memory_mb = memory_info.rss / (1024 * 1024)
     
-    cpu_percent = process.cpu_percent(interval=1.0)
+    cpu_percent = psutil.cpu_percent(interval=1.0)
     
     os_name = platform.system()
     os_version = platform.release()
@@ -209,38 +209,6 @@ def metricas():
         "memoria_mb": info["memoria_mb"],
         "cpu_percent": info["cpu_percent"],
         "sistema_operacional": info["sistema_operacional"]
-    })
-
-@APP.route('/teste-cpu')
-def teste_cpu():
-    import time
-    import threading
-    
-    process = psutil.Process(os.getpid())
-    
-    # Inicializa a medição de CPU
-    process.cpu_percent()
-    
-    # Inicia o trabalho pesado
-    start = time.time()
-    result = 0
-    for i in range(50000000):  
-        result += i ** 2
-    
-    cpu_usage = process.cpu_percent(interval=0.5)
-    elapsed = time.time() - start
-    
-    memory_info = process.memory_info()
-    memory_mb = memory_info.rss / (1024 * 1024)
-    
-    return jsonify({
-        "mensagem": "Teste de CPU concluído",
-        "tempo_processamento": f"{elapsed:.2f} segundos",
-        "resultado_calculo": result,
-        "pid": os.getpid(),
-        "memoria_mb": round(memory_mb, 2),
-        "cpu_percent": round(cpu_usage, 2),
-        "dica": "Se ainda estiver 0%, abra 3-5 abas desta rota simultaneamente (Ctrl+Click)"
     })
 
 if __name__ == '__main__':
